@@ -10,13 +10,13 @@
     <Authors>Roy Schroedel</Authors>
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
     <Description>Type of `IComparer` that enables the alphanumeric comparison of two objects</Description>
-    <PackageReleaseNotes></PackageReleaseNotes>
+    <PackageProjectUrl>https://github.com/Roydl/AlphaNumericComparer</PackageProjectUrl>
     <PackageIcon>LOGO.png</PackageIcon>
-    <PackageIconUrl />
     <RepositoryUrl>git://github.com/Roydl/AlphaNumericComparer</RepositoryUrl>
     <PackageTags>alphanumericcomparer alphanumeric comparer</PackageTags>
     <RepositoryType></RepositoryType>
     <SignAssembly>false</SignAssembly>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

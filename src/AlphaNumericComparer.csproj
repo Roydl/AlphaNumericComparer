@@ -9,14 +9,15 @@
     <Company>Roy Schroedel</Company>
     <Authors>Roy Schroedel</Authors>
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
-    <Description>Type of `IComparer` that enables the alphanumeric comparison of two objects</Description>
+    <Description>Type of `IComparer` that enables the alphanumeric comparison of two objects.</Description>
     <PackageProjectUrl>https://github.com/Roydl/AlphaNumericComparer</PackageProjectUrl>
     <PackageIcon>LOGO.png</PackageIcon>
     <RepositoryUrl>git://github.com/Roydl/AlphaNumericComparer</RepositoryUrl>
-    <PackageTags>alphanumericcomparer alphanumeric comparer</PackageTags>
+    <PackageTags>alphanumeric alphanumericcomparer comparer icomparer</PackageTags>
     <RepositoryType></RepositoryType>
     <SignAssembly>false</SignAssembly>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <Version>1.0.1</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -33,10 +34,12 @@
     <None Include="..\LICENSE.txt">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
+      <Visible>false</Visible>
     </None>
     <None Include="..\LOGO.png">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
+      <Visible>false</Visible>
     </None>
   </ItemGroup>
 

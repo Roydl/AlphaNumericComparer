@@ -4,7 +4,6 @@
     using System.Collections;
     using System.Collections.Generic;
     using System.Globalization;
-    using System.Linq;
     using System.Runtime.Serialization;
     using System.Security;
 
@@ -30,28 +29,6 @@
         ///     Gets the value that determines whether the order is descended.
         /// </summary>
         protected bool Descended { get; }
-
-        /// <summary>
-        ///      A sequence of <see cref="Exception"/> types to catch by <see cref="Compare(object, object)"/>.
-        /// </summary>
-        protected IReadOnlyList<Type> ExTypes { get; }
-
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="AlphaNumericComparer"/> class.
-        ///     A parameter specifies whether the order is descended.
-        /// </summary>
-        /// <param name="descended">
-        ///     <see langword="true"/> to enable the descending order; otherwise,
-        ///     <see langword="false"/>.
-        /// </param>
-        /// <param name="exTypes">
-        ///     A sequence of <see cref="Exception"/> types to catch.
-        /// </param>
-        protected AlphaNumericComparer(bool descended, IEnumerable<Type> exTypes)
-        {
-            Descended = descended;
-            ExTypes = exTypes?.ToArray();
-        }
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="AlphaNumericComparer"/> class.
@@ -95,7 +72,6 @@
                 case StreamingContextStates.CrossAppDomain:
                 case StreamingContextStates.All:
                     Descended = info.GetBoolean(nameof(Descended));
-                    ExTypes = (IReadOnlyList<Type>)info.GetValue(nameof(ExTypes), typeof(IReadOnlyList<Type>));
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(context));
@@ -103,63 +79,20 @@
         }
 
         /// <summary>
-        ///     Determines whether this <see cref="Exception"/> should be caught or thrown.
-        /// </summary>
-        /// <param name="exception">
-        ///     The <see cref="Exception"/> to be checked.
-        /// </param>
-        protected bool ExIsCaught(Exception exception)
-        {
-            if (exception == null || ExTypes?.Any() != true)
-                return true;
-            var current = exception.GetType();
-            return ExTypes.Any(type => type == current);
-        }
-
-        /// <summary>
         ///     Compare two specified objects and returns an integer that indicates their
         ///     relative position in the sort order.
         /// </summary>
-        /// <param name="a">
+        /// <param name="objA">
         ///     The first object to compare.
         /// </param>
-        /// <param name="b">
+        /// <param name="objB">
         ///     The second object to compare.
         /// </param>
-        public int Compare(object a, object b)
+        public virtual int Compare(object objA, object objB)
         {
-            var s1 = GetString(!Descended ? a : b);
-            if (s1 == null)
-                return 0;
-            var s2 = GetString(!Descended ? b : a);
-            if (s2 == null)
-                return 0;
-            try
-            {
-                var i1 = 0;
-                var i2 = 0;
-                while (i1 < s1.Length && i2 < s2.Length)
-                {
-                    var c1 = GetChunk(s1, ref i1);
-                    var c2 = GetChunk(s2, ref i2);
-                    int r;
-                    if (!char.IsDigit(c1[0]) || !char.IsDigit(c2[0]))
-                        r = string.Compare(c1, c2, StringComparison.CurrentCulture);
-                    else
-                    {
-                        var n1 = int.Parse(c1, CultureInfo.CurrentCulture);
-                        var n2 = int.Parse(c2, CultureInfo.CurrentCulture);
-                        r = n1.CompareTo(n2);
-                    }
-                    if (r != 0)
-                        return r;
-                }
-                return s1.Length - s2.Length;
-            }
-            catch (Exception ex) when (ExIsCaught(ex))
-            {
-                return string.Compare(s1, s2, StringComparison.CurrentCulture);
-            }
+            var s1 = GetString(objA);
+            var s2 = GetString(objB);
+            return Compare(s1, s2);
         }
 
         /// <summary>
@@ -177,7 +110,6 @@
             if (info == null)
                 throw new ArgumentNullException(nameof(info));
             info.AddValue(nameof(Descended), Descended);
-            info.AddValue(nameof(ExTypes), ExTypes);
         }
 
         /// <summary>
@@ -208,6 +140,45 @@
         /// </summary>
         public new virtual int GetHashCode() =>
             nameof(AlphaNumericComparer).GetHashCode();
+
+        /// <summary>
+        ///     Compare two specified objects and returns an integer that indicates their
+        ///     relative position in the sort order.
+        /// </summary>
+        /// <param name="strA">
+        ///     The first string to compare.
+        /// </param>
+        /// <param name="strB">
+        ///     The second string to compare.
+        /// </param>
+        protected int Compare(string strA, string strB)
+        {
+            var s1 = !Descended ? strA : strB;
+            var s2 = !Descended ? strB : strA;
+            if (s1 == null)
+                return s2 == null ? 0 : -1;
+            if (s2 == null)
+                return 1;
+            var i1 = 0;
+            var i2 = 0;
+            while (i1 < s1.Length && i2 < s2.Length)
+            {
+                var c1 = GetChunk(s1, ref i1);
+                var c2 = GetChunk(s2, ref i2);
+                int r;
+                if (!char.IsDigit(c1[0]) || !char.IsDigit(c2[0]))
+                    r = string.Compare(c1, c2, StringComparison.CurrentCulture);
+                else
+                {
+                    var n1 = int.Parse(c1, CultureInfo.CurrentCulture);
+                    var n2 = int.Parse(c2, CultureInfo.CurrentCulture);
+                    r = n1.CompareTo(n2);
+                }
+                if (r != 0)
+                    return r;
+            }
+            return s1.Length - s2.Length;
+        }
 
         private static string GetChunk(string str, ref int i)
         {

@@ -18,6 +18,8 @@
     <SignAssembly>false</SignAssembly>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <Version>1.0.1</Version>
+    <PackageReleaseNotes>- Removed redundant try-catch
+- Renamed IStringComparer to IStringObjectComparer to avoid name collision</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

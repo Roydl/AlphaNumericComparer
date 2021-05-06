@@ -10,7 +10,7 @@
     /// <summary>
     ///     Defines a method that performs the string transformation for the comparer.
     /// </summary>
-    public interface IStringComparer
+    public interface IStringObjectComparer
     {
         /// <summary>
         ///     When overridden in a derived class, performs the string transformation of
@@ -23,7 +23,7 @@
     ///     Provides a base class for alphanumeric comparison.
     /// </summary>
     [Serializable]
-    public class AlphaNumericComparer : IComparer, IStringComparer
+    public class AlphaNumericComparer : IComparer, IStringObjectComparer
     {
         /// <summary>
         ///     Gets the value that determines whether the order is descended.

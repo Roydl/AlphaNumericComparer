@@ -4,26 +4,41 @@
     using System.Collections;
     using System.Collections.Generic;
     using System.Globalization;
+    using System.Linq;
+    using System.Reflection;
     using System.Runtime.Serialization;
     using System.Security;
 
     /// <summary>
     ///     Defines a method that performs the string transformation for the comparer.
     /// </summary>
-    public interface IStringObjectComparer
+    public interface IStringObjectComparer : IComparer
     {
         /// <summary>
-        ///     When overridden in a derived class, performs the string transformation of
-        ///     the object for the comparer.
+        ///     Retrieves the string of the object that is used for comparison.
         /// </summary>
+        /// <param name="value">
+        ///     The object to compare.
+        /// </param>
         string GetString(object value);
     }
+
+    /// <inheritdoc cref="IStringObjectComparer"/>
+    /// <typeparam name="T">
+    ///     The type to be compared or which contains the string to be compared.
+    /// </typeparam>
+    public interface IStringObjectComparer<in T> : IStringObjectComparer, IComparer<T> { }
 
     /// <summary>
     ///     Provides a base class for alphanumeric comparison.
     /// </summary>
+    /// <remarks>
+    ///     Although this type can be serialized, but <see cref="ISerializable"/> is
+    ///     missing as this led to conflicts in some cases where it was no longer
+    ///     possible to use this class as <see cref="IComparer"/>.
+    /// </remarks>
     [Serializable]
-    public class AlphaNumericComparer : IComparer, IStringObjectComparer
+    public class AlphaNumericComparer : IStringObjectComparer
     {
         /// <summary>
         ///     Gets the value that determines whether the order is descended.
@@ -78,20 +93,11 @@
             }
         }
 
-        /// <summary>
-        ///     Compare two specified objects and returns an integer that indicates their
-        ///     relative position in the sort order.
-        /// </summary>
-        /// <param name="objA">
-        ///     The first object to compare.
-        /// </param>
-        /// <param name="objB">
-        ///     The second object to compare.
-        /// </param>
-        public virtual int Compare(object objA, object objB)
+        /// <inheritdoc/>
+        public virtual int Compare(object x, object y)
         {
-            var s1 = GetString(objA);
-            var s2 = GetString(objB);
+            var s1 = GetString(x);
+            var s2 = GetString(y);
             return Compare(s1, s2);
         }
 
@@ -112,22 +118,40 @@
             info.AddValue(nameof(Descended), Descended);
         }
 
-        /// <summary>
-        ///     Retrieves the string of the object that is used for comparison.
-        /// </summary>
-        /// <param name="value">
-        ///     The object to compare.
-        /// </param>
-        public virtual string GetString(object value) =>
-            value as string;
+        /// <remarks>
+        ///     The first thing to try is to use <paramref name="value"/> as a string,
+        ///     which should work with all <see cref="IEnumerable"/>&lt;<see cref="char"/>
+        ///     &gt; types. If <paramref name="value"/> is not a string type, however, a
+        ///     check is made to see whether <paramref name="value"/> has a public string
+        ///     field called <see langword="Text"/> or <see langword="Name"/> that can be
+        ///     used for comparison. If the <see langword="Text"/> field is found, it will
+        ///     be used, even if it contains an empty string.
+        /// </remarks>
+        /// <inheritdoc/>
+        public virtual string GetString(object value)
+        {
+            if (value is IEnumerable<char> item)
+                return item as string ?? new string(item.ToArray());
+            try
+            {
+                var type = value?.GetType();
+                if (type == null)
+                    return null;
+                foreach (var name in new[] { "Text", "Name" })
+                {
+                    var field = type.GetField(name, BindingFlags.Public | BindingFlags.GetField);
+                    if (field?.GetValue(null) is string result)
+                        return result;
+                }
+            }
+            catch
+            {
+                // This is a fallback feature so we don't want an exception. 
+            }
+            return null;
+        }
 
-        /// <summary>
-        ///     Determines whether this instance have same values as the specified
-        ///     <see cref="object"/>.
-        /// </summary>
-        /// <param name="other">
-        ///     The  <see cref="object"/> to compare.
-        /// </param>
+        /// <inheritdoc cref="object.Equals(object)"/>
         public new virtual bool Equals(object other)
         {
             if (other is not AlphaNumericComparer comparer)
@@ -135,26 +159,25 @@
             return Descended != comparer.Descended;
         }
 
-        /// <summary>
-        ///     Returns the hash code for this instance.
-        /// </summary>
+        /// <inheritdoc cref="Type.GetHashCode()"/>
         public new virtual int GetHashCode() =>
-            nameof(AlphaNumericComparer).GetHashCode();
+            GetType().GetHashCode();
 
         /// <summary>
-        ///     Compare two specified objects and returns an integer that indicates their
+        ///     Compare two specified strings and returns an integer that indicates their
         ///     relative position in the sort order.
         /// </summary>
-        /// <param name="strA">
+        /// <param name="x">
         ///     The first string to compare.
         /// </param>
-        /// <param name="strB">
+        /// <param name="y">
         ///     The second string to compare.
         /// </param>
-        protected int Compare(string strA, string strB)
+        /// <inheritdoc cref="Compare(object, object)"/>
+        protected int Compare(string x, string y)
         {
-            var s1 = !Descended ? strA : strB;
-            var s2 = !Descended ? strB : strA;
+            var s1 = !Descended ? x : y;
+            var s2 = !Descended ? y : x;
             if (s1 == null)
                 return s2 == null ? 0 : -1;
             if (s2 == null)
@@ -191,20 +214,16 @@
         }
     }
 
-    /// <summary>
-    ///     Provides a base class for alphanumeric comparison.
-    /// </summary>
+    /// <inheritdoc cref="AlphaNumericComparer"/>
+    /// <inheritdoc cref="IStringObjectComparer{T}"/>
     [Serializable]
-    public class AlphaNumericComparer<T> : AlphaNumericComparer, IComparer<T>
+    public class AlphaNumericComparer<T> : AlphaNumericComparer, IStringObjectComparer<T>
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="AlphaNumericComparer{T}"/>
         ///     class. A parameter specifies whether the order is descended.
         /// </summary>
-        /// <param name="descended">
-        ///     <see langword="true"/> to enable the descending order; otherwise,
-        ///     <see langword="false"/>.
-        /// </param>
+        /// <inheritdoc cref="AlphaNumericComparer(bool)"/>
         public AlphaNumericComparer(bool descended) : base(descended) { }
 
         /// <summary>
@@ -217,45 +236,17 @@
         ///     Initializes a new instance of the <see cref="AlphaNumericComparer{T}"/>
         ///     class with serialized data.
         /// </summary>
-        /// <param name="info">
-        ///     The object that holds the serialized object data.
-        /// </param>
-        /// <param name="context">
-        ///     The contextual information about the source or destination.
-        /// </param>
+        /// <inheritdoc cref="AlphaNumericComparer(SerializationInfo, StreamingContext)"/>
         protected AlphaNumericComparer(SerializationInfo info, StreamingContext context) : base(info, context) { }
 
-        /// <summary>
-        ///     Compare two specified objects and returns an integer that indicates their
-        ///     relative position in the sort order.
-        /// </summary>
-        /// <param name="a">
-        ///     The first object to compare.
-        /// </param>
-        /// <param name="b">
-        ///     The second object to compare.
-        /// </param>
-        public int Compare(T a, T b) => base.Compare(a, b);
+        /// <inheritdoc/>
+        public int Compare(T x, T y) => base.Compare(x, y);
 
-        /// <summary>
-        ///     Sets the <see cref="SerializationInfo"/> object for this instance.
-        /// </summary>
-        /// <param name="info">
-        ///     The object that holds the serialized object data.
-        /// </param>
-        /// <param name="context">
-        ///     The contextual information about the source or destination.
-        /// </param>
+        /// <inheritdoc cref="AlphaNumericComparer.GetObjectData(SerializationInfo, StreamingContext)"/>
         [SecurityCritical]
         public new virtual void GetObjectData(SerializationInfo info, StreamingContext context) => base.GetObjectData(info, context);
 
-        /// <summary>
-        ///     Determines whether this instance have same values as the specified
-        ///     <see cref="object"/>.
-        /// </summary>
-        /// <param name="other">
-        ///     The  <see cref="object"/> to compare.
-        /// </param>
+        /// <inheritdoc cref="object.Equals(object)"/>
         public new virtual bool Equals(object other)
         {
             if (other is not AlphaNumericComparer<T> comparer)
@@ -263,14 +254,8 @@
             return Descended != comparer.Descended;
         }
 
-        /// <summary>
-        ///     Returns the hash code for this instance.
-        /// </summary>
-        public new virtual int GetHashCode()
-        {
-            var current = base.GetHashCode();
-            var unsigned = (uint)((current << 5) | (int)((uint)current >> 27));
-            return ((int)unsigned + current) ^ typeof(T).Name.GetHashCode();
-        }
+        /// <inheritdoc cref="Type.GetHashCode()"/>
+        public new virtual int GetHashCode() =>
+            HashCode.Combine(GetType(), typeof(T));
     }
 }

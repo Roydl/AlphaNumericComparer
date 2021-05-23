@@ -37,7 +37,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\AlphaNumericComparer.csproj" />
+    <ProjectReference Include="..\src\Roydl.AlphaNumericComparer.csproj" />
   </ItemGroup>
 
 </Project>

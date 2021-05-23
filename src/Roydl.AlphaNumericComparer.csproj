@@ -18,9 +18,10 @@
     <RepositoryType></RepositoryType>
     <SignAssembly>false</SignAssembly>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <Version>1.0.1</Version>
-    <PackageReleaseNotes>- Removed redundant try-catch
-- Renamed IStringComparer to IStringObjectComparer to avoid name collision</PackageReleaseNotes>
+    <Version>1.0.2</Version>
+    <PackageReleaseNotes>- .NET Core 3.1 is now supported
+- Improved comparison so that it also applies to classes with `Text` or `Name` fields
+- The documentation has been improved to make some things easier to understand</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

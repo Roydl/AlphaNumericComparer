@@ -31,10 +31,11 @@ Types of `IComparer` that enables the alphanumeric comparison of two objects.
 #### Usage:
 ```cs
 // Can be used in the same way as all `IComparer`.
-var sortedDictionary = new SortedDictionary<string, object>(new AlphaNumericComparer<string>());
-var sortedList = new SortedList<string, object>(new AlphaNumericComparer<string>());
+var comparer = new AlphaNumericComparer<string>();
 var unsortedCollection  = new string[] { /* some strings */ };
-var sortedCollection = unsorted.OrderBy(str => str, new AlphaNumericComparer<string>());
+var sortedCollection = unsortedCollection.OrderBy(str => str, comparer);
+var sortedDictionary = new SortedDictionary<string, object>(comparer);
+var sortedList = new SortedList<string, object>(comparer);
 
 // Can even be used to sort `System.Windows.Forms` elements or the like.
 // In case of `System.Windows.Forms.ListView` you just have to set

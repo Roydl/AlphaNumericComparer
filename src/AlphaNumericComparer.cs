@@ -9,68 +9,37 @@
     using System.Runtime.Serialization;
     using System.Security;
 
-    /// <summary>
-    ///     Defines a method that performs the string transformation for the comparer.
-    /// </summary>
+    /// <summary>Defines a method that performs the string transformation for the comparer.</summary>
     public interface IStringObjectComparer : IComparer
     {
-        /// <summary>
-        ///     Retrieves the string of the object that is used for comparison.
-        /// </summary>
-        /// <param name="value">
-        ///     The object to compare.
-        /// </param>
+        /// <summary>Retrieves the string of the object that is used for comparison.</summary>
+        /// <param name="value">The object to compare.</param>
         string GetString(object value);
     }
 
     /// <inheritdoc cref="IStringObjectComparer"/>
-    /// <typeparam name="T">
-    ///     The type to be compared or which contains the string to be compared.
-    /// </typeparam>
+    /// <typeparam name="T">The type to be compared or which contains the string to be compared.</typeparam>
     public interface IStringObjectComparer<in T> : IStringObjectComparer, IComparer<T> { }
 
-    /// <summary>
-    ///     Provides a base class for alphanumeric comparison.
-    /// </summary>
-    /// <remarks>
-    ///     Although this type can be serialized, but <see cref="ISerializable"/> is
-    ///     missing as this led to conflicts in some cases where it was no longer
-    ///     possible to use this class as <see cref="IComparer"/>.
-    /// </remarks>
+    /// <summary>Provides a base class for alphanumeric comparison.</summary>
+    /// <remarks>Although this type can be serialized, but <see cref="ISerializable"/> is missing as this led to conflicts in some cases where it was no longer possible to use this class as <see cref="IComparer"/>.</remarks>
     [Serializable]
     public class AlphaNumericComparer : IStringObjectComparer
     {
-        /// <summary>
-        ///     Gets the value that determines whether the order is descended.
-        /// </summary>
+        /// <summary>Gets the value that determines whether the order is descended.</summary>
         protected bool Descended { get; }
 
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="AlphaNumericComparer"/> class.
-        ///     A parameter specifies whether the order is descended.
-        /// </summary>
-        /// <param name="descended">
-        ///     <see langword="true"/> to enable the descending order; otherwise,
-        ///     <see langword="false"/>.
-        /// </param>
+        /// <summary>Initializes a new instance of the <see cref="AlphaNumericComparer"/> class. A parameter specifies whether the order is descended.</summary>
+        /// <param name="descended"><see langword="true"/> to enable the descending order; otherwise, <see langword="false"/>.</param>
         public AlphaNumericComparer(bool descended) =>
             Descended = descended;
 
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="AlphaNumericComparer"/> class.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="AlphaNumericComparer"/> class.</summary>
         public AlphaNumericComparer() : this(false) { }
 
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="AlphaNumericComparer"/> class
-        ///     with serialized data.
-        /// </summary>
-        /// <param name="info">
-        ///     The object that holds the serialized object data.
-        /// </param>
-        /// <param name="context">
-        ///     The contextual information about the source or destination.
-        /// </param>
+        /// <summary>Initializes a new instance of the <see cref="AlphaNumericComparer"/> class with serialized data.</summary>
+        /// <param name="info">The object that holds the serialized object data.</param>
+        /// <param name="context">The contextual information about the source or destination.</param>
         protected AlphaNumericComparer(SerializationInfo info, StreamingContext context)
         {
             if (info == null)
@@ -101,15 +70,9 @@
             return Compare(s1, s2);
         }
 
-        /// <summary>
-        ///     Sets the <see cref="SerializationInfo"/> object for this instance.
-        /// </summary>
-        /// <param name="info">
-        ///     The object that holds the serialized object data.
-        /// </param>
-        /// <param name="context">
-        ///     The contextual information about the source or destination.
-        /// </param>
+        /// <summary>Sets the <see cref="SerializationInfo"/> object for this instance.</summary>
+        /// <param name="info">The object that holds the serialized object data.</param>
+        /// <param name="context">The contextual information about the source or destination.</param>
         [SecurityCritical]
         public virtual void GetObjectData(SerializationInfo info, StreamingContext context)
         {
@@ -118,15 +81,7 @@
             info.AddValue(nameof(Descended), Descended);
         }
 
-        /// <remarks>
-        ///     The first thing to try is to use <paramref name="value"/> as a string,
-        ///     which should work with all <see cref="IEnumerable"/>&lt;<see cref="char"/>
-        ///     &gt; types. If <paramref name="value"/> is not a string type, however, a
-        ///     check is made to see whether <paramref name="value"/> has a public string
-        ///     field called <see langword="Text"/> or <see langword="Name"/> that can be
-        ///     used for comparison. If the <see langword="Text"/> field is found, it will
-        ///     be used, even if it contains an empty string.
-        /// </remarks>
+        /// <remarks>The first thing to try is to use <paramref name="value"/> as a string, which should work with all <see cref="IEnumerable"/>&lt;<see cref="char"/> &gt; types. If <paramref name="value"/> is not a string type, however, a check is made to see whether <paramref name="value"/> has a public string field called <see langword="Text"/> or <see langword="Name"/> that can be used for comparison. If the <see langword="Text"/> field is found, it will be used, even if it contains an empty string.</remarks>
         /// <inheritdoc/>
         public virtual string GetString(object value)
         {
@@ -163,23 +118,18 @@
         public new virtual int GetHashCode() =>
             GetType().GetHashCode();
 
-        /// <summary>
-        ///     Compare two specified strings and returns an integer that indicates their
-        ///     relative position in the sort order.
-        /// </summary>
-        /// <param name="x">
-        ///     The first string to compare.
-        /// </param>
-        /// <param name="y">
-        ///     The second string to compare.
-        /// </param>
+        /// <summary>Compare two specified strings and returns an integer that indicates their relative position in the sort order.</summary>
+        /// <param name="x">The first string to compare.</param>
+        /// <param name="y">The second string to compare.</param>
         /// <inheritdoc cref="Compare(object, object)"/>
         protected int Compare(string x, string y)
         {
             var s1 = !Descended ? x : y;
             var s2 = !Descended ? y : x;
+            if (s1 == s2)
+                return 0;
             if (s1 == null)
-                return s2 == null ? 0 : -1;
+                return -1;
             if (s2 == null)
                 return 1;
             var i1 = 0;
@@ -219,23 +169,14 @@
     [Serializable]
     public class AlphaNumericComparer<T> : AlphaNumericComparer, IStringObjectComparer<T>
     {
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="AlphaNumericComparer{T}"/>
-        ///     class. A parameter specifies whether the order is descended.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="AlphaNumericComparer{T}"/> class. A parameter specifies whether the order is descended.</summary>
         /// <inheritdoc cref="AlphaNumericComparer(bool)"/>
         public AlphaNumericComparer(bool descended) : base(descended) { }
 
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="AlphaNumericComparer{T}"/>
-        ///     class.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="AlphaNumericComparer{T}"/> class.</summary>
         public AlphaNumericComparer() : base(false) { }
 
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="AlphaNumericComparer{T}"/>
-        ///     class with serialized data.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="AlphaNumericComparer{T}"/> class with serialized data.</summary>
         /// <inheritdoc cref="AlphaNumericComparer(SerializationInfo, StreamingContext)"/>
         protected AlphaNumericComparer(SerializationInfo info, StreamingContext context) : base(info, context) { }
 

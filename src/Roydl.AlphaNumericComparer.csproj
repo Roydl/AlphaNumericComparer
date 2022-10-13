@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net5.0;netcoreapp3.1</TargetFrameworks>
+    <TargetFrameworks>net6.0;netcoreapp3.1</TargetFrameworks>
     <LangVersion>latest</LangVersion>
     <AssemblyName>Roydl.AlphaNumericComparer</AssemblyName>
     <RootNamespace>Roydl</RootNamespace>
@@ -18,10 +18,8 @@
     <RepositoryType></RepositoryType>
     <SignAssembly>false</SignAssembly>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <Version>1.0.2</Version>
-    <PackageReleaseNotes>- .NET Core 3.1 is now supported
-- Improved comparison so that it also applies to classes with `Text` or `Name` fields
-- The documentation has been improved to make some things easier to understand</PackageReleaseNotes>
+    <Version>1.0.3</Version>
+    <PackageReleaseNotes>- Update to .NET 6.0 as 5.0 is reaching EOL</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

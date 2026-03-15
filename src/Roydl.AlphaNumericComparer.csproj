@@ -1,48 +1,55 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFrameworks>net6.0;netcoreapp3.1</TargetFrameworks>
-    <LangVersion>latest</LangVersion>
-    <AssemblyName>Roydl.AlphaNumericComparer</AssemblyName>
-    <RootNamespace>Roydl</RootNamespace>
-    <NeutralLanguage>en-US</NeutralLanguage>
-    <Copyright>© Roy Schroedel. All rights reserved.</Copyright>
-    <Company>Roy Schroedel</Company>
-    <Authors>Roy Schroedel</Authors>
-    <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
-    <Description>Type of `IComparer` that enables the alphanumeric comparison of two objects.</Description>
-    <PackageProjectUrl>https://github.com/Roydl/AlphaNumericComparer</PackageProjectUrl>
-    <PackageIcon>LOGO.png</PackageIcon>
-    <RepositoryUrl>git://github.com/Roydl/AlphaNumericComparer</RepositoryUrl>
-    <PackageTags>alphanumeric alphanumericcomparer comparer icomparer</PackageTags>
-    <RepositoryType></RepositoryType>
-    <SignAssembly>false</SignAssembly>
-    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <Version>1.0.3</Version>
-    <PackageReleaseNotes>- Update to .NET 6.0 as 5.0 is reaching EOL</PackageReleaseNotes>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFrameworks>net10.0</TargetFrameworks>
+        <LangVersion>latest</LangVersion>
+        <AssemblyName>Roydl.AlphaNumericComparer</AssemblyName>
+        <RootNamespace>Roydl</RootNamespace>
+        <NeutralLanguage>en-US</NeutralLanguage>
+        <Copyright>© Roy Schroedel. All rights reserved.</Copyright>
+        <Company>Roy Schroedel</Company>
+        <Authors>Roy Schroedel</Authors>
+        <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+        <Description>Type of `IComparer` that enables the alphanumeric comparison of two objects.</Description>
+        <PackageProjectUrl>https://github.com/Roydl/AlphaNumericComparer</PackageProjectUrl>
+        <PackageIcon>LOGO.png</PackageIcon>
+        <RepositoryUrl>https://github.com/Roydl/AlphaNumericComparer</RepositoryUrl>
+        <PackageTags>alphanumeric alphanumericcomparer comparer icomparer</PackageTags>
+        <SignAssembly>false</SignAssembly>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <Version>1.1.0</Version>
+        <PackageId>Roydl.AlphaNumericComparer</PackageId>
+        <Product>Roydl.AlphaNumericComparer</Product>
+        <PackageReleaseNotes>- Updated to .NET 10.0
+- Removed support for older .NET versions as they have already reached EOL
+        </PackageReleaseNotes>
+        <Title>Roy's Dynamic-Link Libraries – AlphaNumeric Comparer</Title>
+        <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+        <AssemblyVersion>1.1.0</AssemblyVersion>
+        <FileVersion>1.1.0</FileVersion>
+    </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>obj\Debug\Roydl.AlphaNumericComparer.xml</DocumentationFile>
-    <OutputPath>..\bin\Debug</OutputPath>
-  </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+        <DocumentationFile>obj\Debug\$(TargetFramework)\Roydl.AlphaNumericComparer.xml</DocumentationFile>
+        <OutputPath>..\bin\Debug</OutputPath>
+    </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>obj\Release\Roydl.AlphaNumericComparer.xml</DocumentationFile>
-    <OutputPath>..\bin\Release</OutputPath>
-  </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+        <DocumentationFile>obj\Release\$(TargetFramework)\Roydl.AlphaNumericComparer.xml</DocumentationFile>
+        <OutputPath>..\bin\Release</OutputPath>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <None Include="..\LICENSE.txt">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-      <Visible>false</Visible>
-    </None>
-    <None Include="..\LOGO.png">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-      <Visible>false</Visible>
-    </None>
-  </ItemGroup>
+    <ItemGroup>
+        <None Include="..\LICENSE.txt">
+            <Pack>True</Pack>
+            <PackagePath>/</PackagePath>
+            <Visible>False</Visible>
+        </None>
+        <None Include="..\LOGO.png">
+            <Pack>True</Pack>
+            <PackagePath>/</PackagePath>
+            <Visible>False</Visible>
+        </None>
+    </ItemGroup>
 
 </Project>

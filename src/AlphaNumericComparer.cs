@@ -40,8 +40,10 @@
         /// <summary>Initializes a new instance of the <see cref="AlphaNumericComparer"/> class with serialized data.</summary>
         /// <param name="info">The object that holds the serialized object data.</param>
         /// <param name="context">The contextual information about the source or destination.</param>
+        [Obsolete("Formatter-based serialization is obsolete and should not be used.")]
         protected AlphaNumericComparer(SerializationInfo info, StreamingContext context)
         {
+            /*
             if (info == null)
                 throw new ArgumentNullException(nameof(info));
             switch (context.State)
@@ -60,6 +62,7 @@
                 default:
                     throw new ArgumentOutOfRangeException(nameof(context));
             }
+            */
         }
 
         /// <inheritdoc/>
@@ -76,8 +79,7 @@
         [SecurityCritical]
         public virtual void GetObjectData(SerializationInfo info, StreamingContext context)
         {
-            if (info == null)
-                throw new ArgumentNullException(nameof(info));
+            ArgumentNullException.ThrowIfNull(info);
             info.AddValue(nameof(Descended), Descended);
         }
 
@@ -178,6 +180,7 @@
 
         /// <summary>Initializes a new instance of the <see cref="AlphaNumericComparer{T}"/> class with serialized data.</summary>
         /// <inheritdoc cref="AlphaNumericComparer(SerializationInfo, StreamingContext)"/>
+        [Obsolete("Formatter-based serialization is obsolete and should not be used.")]
         protected AlphaNumericComparer(SerializationInfo info, StreamingContext context) : base(info, context) { }
 
         /// <inheritdoc/>
